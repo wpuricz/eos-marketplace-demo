@@ -49,14 +49,6 @@
 import * as Eos from 'eosjs';
 import secrets from '../../../config/secrets'
 
-// let config = {
-//   keyProvider:['5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3',
-//   '5JPt2pZLYS2AG6cni13YKtgUxujiTe5gZbTykRUxrXLkPSyBzyP',
-//   '5KZpU743iafwED3BM5ToXt9FL75RnN13K8q9RFCPcpP9xo3pJaD',
-//   '5JTkJYgWf1282i3SiL2f2KxSYuASiKw92nY4tD7bxuvo46RXtWG'
-//   ],
-//   httpEndpoint: "http://159.89.226.163:8888"
-// };
 let config = {
   keyProvider:secrets.keys,
   httpEndpoint: secrets.endpoint
