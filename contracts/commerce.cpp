@@ -16,13 +16,13 @@ public:
     _product(_self,_self){}
     
     // @abi action
-    void addproduct( uint64_t id, name owner, string name, string description, asset price) {
+    void addproduct( name owner, string name, string description, asset price) {
         // cleos push action commerce.code addproduct '[2,"user1","wireless mouse","mac magic mouse","71.99 EOS"]' -p user1
         // cleos get table commerce.code commerce.code product
         require_auth(owner);
         
         _product.emplace(owner, [&] (auto& row) {
-            row.id = id;
+            row.id = _product.available_primary_key();
             row.owner = owner;
             row.name = name;
             row.description = description;
@@ -63,12 +63,14 @@ private:
         string description;
         asset price;
         
-        uint64_t primary_key() const { return id; }
+        //uint64_t primary_key() const { return id; }
+        auto primary_key()const { return id; }
         
         EOSLIB_SERIALIZE(product, (id)(owner)(name)(description)(price));
     };
 
     multi_index<N(product), product> _product;
+    
     
     
 };

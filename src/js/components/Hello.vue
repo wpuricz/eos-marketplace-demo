@@ -3,8 +3,8 @@
     {{msg}}
 
      <div class="product-form">
-      <label for="rowid">ID</label>
-      <input name="rowid" v-model="rowid" /><br/>
+      <!-- <label for="rowid">ID</label>
+      <input name="rowid" v-model="rowid" /><br/> -->
       <label for="name">Name</label>
       <input name="name" v-model="name"/><br/>
       <label for="description">Description</label>
@@ -103,7 +103,7 @@ export default {
                 permission: 'active'
               }],
               data: {
-                id: this.rowid,
+                //id: this.rowid,
                 owner: currentUser,
                 name: this.name,
                 description: this.description,
