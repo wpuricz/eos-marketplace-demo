@@ -6,7 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 contracts/deploy.sh
 config/secrets.js
-
+package-lock.json
 # Editor directories and files
 .idea
 *.suo
