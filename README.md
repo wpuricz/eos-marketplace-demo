@@ -1,12 +1,14 @@
-# vue-starter
 
-> A Vue.js starter kit that lets you focus on more programming and less configruation.
+
+Basic EOS CRUD example using Vue.js and EOS Blockchain
 
 ## Build Setup
 
 ### TODO: Finish documenting setup
 ``` bash
 # install dependencies
+git clone git@github.com:wpuricz/eos-commerce.git
+cd eos-commerce
 npm install
 ```
 
@@ -26,6 +28,22 @@ module.exports = {
     ]
   };
 ```
+
+Update the code in Hello.vue to reflect your account, scope, and user
+
+```
+let appcode = 'commerce.app';
+let currentUser = 'user1';
+```
+
+    npm run dev  # Start local vue application
+
+### Server Deploy
+
+- Create an account for the application (i.e. commerce.app)
+- Create an account for the currentuser (i.e user1)
+- Deploy the contract
+
 
 ### serve with hot reload at localhost:8080
 npm run dev
