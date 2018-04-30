@@ -3,7 +3,7 @@
 Basic EOS CRUD example using Vue.js and EOS Blockchain
 
 ### Setup
-
+Requires DAWN 3.
 
 ``` bash
 # install dependencies
