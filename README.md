@@ -15,7 +15,7 @@ npm install
 #### create a secrets file
 this is for keeping the endpoint and the keys needed for signing transactions
 
-*Keys are only stored for ease of demo purposes! Never in production*
+*Keys are only stored for ease of demo purposes!*
 
     touch config/secrets.js
 
