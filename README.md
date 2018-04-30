@@ -2,9 +2,9 @@
 
 Basic EOS CRUD example using Vue.js and EOS Blockchain
 
-## Build Setup
+### Setup
 
-### TODO: Finish documenting setup
+
 ``` bash
 # install dependencies
 git clone git@github.com:wpuricz/eos-commerce.git
@@ -12,7 +12,7 @@ cd eos-commerce
 npm install
 ```
 
-### create a secrets file
+#### create a secrets file
 this is for keeping the endpoint and the keys needed for signing transactions
 
 *Keys are only stored for ease of demo purposes! Never in production*
@@ -38,14 +38,14 @@ let currentUser = 'user1';
 
     npm run dev  # Start local vue application
 
-### Server Deploy
+#### Server Deploy
 
 - Create an account for the application (i.e. commerce.app)
 - Create an account for the currentuser (i.e user1)
 - Deploy the contract
 
 
-### serve with hot reload at localhost:8080
+#### serve with hot reload
 npm run dev
 
 
