@@ -2,6 +2,8 @@
 
 Basic EOS CRUD example using Vue.js and EOS Blockchain
 
+Credit to https://github.com/nsjames/Scatter-Tutorials
+
 ### Setup
 Requires DAWN 3.
 
