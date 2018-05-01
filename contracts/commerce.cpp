@@ -49,25 +49,35 @@ public:
     // @abi action
     void delproduct(uint64_t id, name owner) {
         // cleos push action commerce.code dropproduct '[1]' -p user1
+        // 2018-01-08T01:02:11
         require_auth(owner);
         auto iter = _product.find(id);
         _product.erase(iter);
     }
 
     // @abi action
-    void addorder(account_name buyer, account_name seller, asset total) {
-        // cleos push action commerce.app addheader '["user2","user1","10.99 EOS"]' -p user2
+    void addorder(account_name buyer, account_name seller, asset total, string desc) {
+        // cleos push action commerce.app addheader '["user2","user1","10.99 EOS","magic mouse"]' -p user2
         // cleos get table commerce.app commerce.app orderheader
         require_auth(buyer);
-        eosio_assert(!seller, "")
+        
         _order.emplace(buyer, [&] (auto& row) {
             row.id = _order.available_primary_key();
             row.buyer = buyer;
             row.seller = seller;
             row.total = total;
-            
+            row.desc = desc;
+            row.orderdate = now();
         });
     }
+
+    void delorder(uint64_t id) {
+        // cleos push action commerce.code delorder '[1]' -p commerce.app
+        
+        auto iter = _order.find(id);
+        _order.erase(iter);
+    }
+    
     
     
 private:
@@ -90,12 +100,13 @@ private:
         uint64_t id;
         account_name buyer;
         account_name seller;
-        
         asset total;
+        string desc;
+        uint64_t orderdate;
 
         auto primary_key()const { return id;}
 
-        EOSLIB_SERIALIZE(orderheader, (id)(buyer)(seller)(total));
+        EOSLIB_SERIALIZE(orderheader, (id)(buyer)(seller)(total)(desc)(orderdate));
 
     };
 
@@ -106,4 +117,4 @@ private:
     
 };
 
-EOSIO_ABI( commerce, (addproduct)(modproduct)(delproduct)(addorder) );
+EOSIO_ABI( commerce, (addproduct)(modproduct)(delproduct)(addorder)(delorder) );
