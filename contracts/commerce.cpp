@@ -13,6 +13,7 @@ class commerce : public contract {
 public:
     commerce( account_name self ) :
     contract(self),
+    _order(_self,_self),
     _product(_self,_self){}
     
     // @abi action
@@ -52,6 +53,21 @@ public:
         auto iter = _product.find(id);
         _product.erase(iter);
     }
+
+    // @abi action
+    void addorder(account_name buyer, account_name seller, asset total) {
+        // cleos push action commerce.app addheader '["user2","user1","10.99 EOS"]' -p user2
+        // cleos get table commerce.app commerce.app orderheader
+        require_auth(buyer);
+        eosio_assert(!seller, "")
+        _order.emplace(buyer, [&] (auto& row) {
+            row.id = _order.available_primary_key();
+            row.buyer = buyer;
+            row.seller = seller;
+            row.total = total;
+            
+        });
+    }
     
     
 private:
@@ -69,10 +85,25 @@ private:
         EOSLIB_SERIALIZE(product, (id)(owner)(name)(description)(price));
     };
 
+    // @abi table orderheader i64
+    struct orderheader {
+        uint64_t id;
+        account_name buyer;
+        account_name seller;
+        
+        asset total;
+
+        auto primary_key()const { return id;}
+
+        EOSLIB_SERIALIZE(orderheader, (id)(buyer)(seller)(total));
+
+    };
+
     multi_index<N(product), product> _product;
+    multi_index<N(orderheader), orderheader> _order;
     
     
     
 };
 
-EOSIO_ABI( commerce, (addproduct)(modproduct)(delproduct) );
+EOSIO_ABI( commerce, (addproduct)(modproduct)(delproduct)(addorder) );
