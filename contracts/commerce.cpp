@@ -75,6 +75,7 @@ public:
         // cleos push action commerce.code delorder '[1]' -p commerce.app
         
         auto iter = _order.find(id);
+        print("found id");
         _order.erase(iter);
     }
     
