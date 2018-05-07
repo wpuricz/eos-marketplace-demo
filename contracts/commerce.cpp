@@ -22,12 +22,14 @@ public:
         // cleos get table commerce.code commerce.code product
         require_auth(owner);
         
+        
         _product.emplace(owner, [&] (auto& row) {
             row.id = _product.available_primary_key();
             row.owner = owner;
             row.name = name;
             row.description = description;
             row.price = price;
+            
         });
 
     }
@@ -57,9 +59,24 @@ public:
 
     // @abi action
     void addorder(account_name buyer, account_name seller, asset total, string desc) {
-        // cleos push action commerce.app addheader '["user2","user1","10.99 EOS","magic mouse"]' -p user2
-        // cleos get table commerce.app commerce.app orderheader
+        // cleos push action commerce.app addorder '["user2","user1","10.99 EOS","magic mouse"]' -p user2
+        // cleos push action commerce.app addorder '["user2","user1","10.99 EOS","magic mouse"]' -p user2
+        // cleos get table commerce.app commerce.app order
         require_auth(buyer);
+        uint64_t p0 = 0;
+        uint64_t p1 = 2;
+
+
+        orderline ol1 = {1,p0,1};
+        orderline ol2 = {2,p1,1};
+        vector<orderline> olines;
+        olines.push_back(ol1);
+        olines.push_back(ol2);
+
+        auto iter_product = _product.find(p0);
+        eosio_assert(iter_product != _product.end(), "Product 1 does not exist");
+        iter_product = _product.find(p1);
+        eosio_assert(iter_product != _product.end(), "Product 2 does not exist");
         
         _order.emplace(buyer, [&] (auto& row) {
             row.id = _order.available_primary_key();
@@ -67,12 +84,20 @@ public:
             row.seller = seller;
             row.total = total;
             row.desc = desc;
+            row.lines = olines;
             row.orderdate = now();
+            
         });
+        
+        eosio::action(
+            permission_level{ N(user2), N(active) },
+            N(eosio.token), N(transfer),
+            std::make_tuple(buyer, seller, "7.0000 EOS", "memo")
+         ).send();
     }
 
     void delorder(uint64_t id) {
-        // cleos push action commerce.code delorder '[1]' -p commerce.app
+        // cleos push action commerce.app delorder '[1]' -p commerce.app
         
         auto iter = _order.find(id);
         print("found id");
@@ -95,24 +120,33 @@ private:
         
         EOSLIB_SERIALIZE(product, (id)(owner)(name)(description)(price));
     };
-
-    // @abi table orderheader i64
-    struct orderheader {
+    
+    struct orderline {
+        uint64_t id;
+        uint64_t product_id;
+        uint64_t quantity;
+    };
+    
+    // @abi table order i64
+    struct order {
         uint64_t id;
         account_name buyer;
         account_name seller;
         asset total;
         string desc;
+        vector<orderline> lines;
         uint64_t orderdate;
 
         auto primary_key()const { return id;}
 
-        EOSLIB_SERIALIZE(orderheader, (id)(buyer)(seller)(total)(desc)(orderdate));
+        EOSLIB_SERIALIZE(order, (id)(buyer)(seller)(total)(desc)(lines)(orderdate));
 
     };
+    
+    
 
     multi_index<N(product), product> _product;
-    multi_index<N(orderheader), orderheader> _order;
+    multi_index<N(order), order> _order;
     
     
     

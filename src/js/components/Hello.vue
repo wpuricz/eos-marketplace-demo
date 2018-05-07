@@ -93,7 +93,7 @@ export default {
       
       try {
         this.processing = true;
-        await eos.transaction({
+        let response = await eos.transaction({
           actions: [
             {
               account: appcode,
@@ -113,6 +113,7 @@ export default {
             }
           ]
         })
+        console.log(response)
         let result = await this.getProducts();
         this.processing = false;
 
