@@ -3,17 +3,19 @@
 #include <eosiolib/multi_index.hpp>
 #include <eosiolib/asset.hpp>
 
-
 using namespace eosio;
 using namespace std;
+
+#include "products.h"
+#include "orders.h"
+
+using namespace products;
+using namespace orders;
 
 class commerce : public contract {
     using contract::contract;
 
-struct cart {
-        uint64_t product_id;
-        uint64_t quantity;
-    };
+
 
 public:
     commerce( account_name self ) :
@@ -27,7 +29,6 @@ public:
         // cleos get table commerce.code commerce.code product
         require_auth(owner);
         
-        
         _product.emplace(owner, [&] (auto& row) {
             row.id = _product.available_primary_key();
             row.owner = owner;
@@ -36,12 +37,12 @@ public:
             row.price = price;
             
         });
-
     }
 
     // @abi action
     void modproduct(uint64_t id, name owner, string name, string description, asset price) {
         //cleos push action commerce.code modproduct '[2,"user1","wireless mouse","mac magic Mouse","71.99 EOS"]' -p user1
+        
         require_auth(owner);
         auto iter = _product.find(id);
         _product.modify( iter, 0, [&]( auto& row) {
@@ -57,6 +58,7 @@ public:
     void delproduct(uint64_t id, name owner) {
         // cleos push action commerce.code dropproduct '[1]' -p user1
         // 2018-01-08T01:02:11
+        
         require_auth(owner);
         auto iter = _product.find(id);
         _product.erase(iter);
@@ -115,49 +117,9 @@ public:
     
     
 private:
-    // @abi table
-    struct product {
-        uint64_t id;
-        name owner;
-        string name;
-        string description;
-        asset price;
-        
-        //uint64_t primary_key() const { return id; }
-        auto primary_key()const { return id; }
-        
-        EOSLIB_SERIALIZE(product, (id)(owner)(name)(description)(price));
-    };
-    
-    struct orderline {
-        uint64_t id;
-        uint64_t product_id;
-        uint64_t quantity;
-    };
-
-    
-    // @abi table order i64
-    struct order {
-        uint64_t id;
-        account_name buyer;
-        account_name seller;
-        asset total;
-        string desc;
-        vector<orderline> lines;
-        uint64_t orderdate;
-
-        auto primary_key()const { return id;}
-
-        EOSLIB_SERIALIZE(order, (id)(buyer)(seller)(total)(desc)(lines)(orderdate));
-
-    };
-    
-    
 
     multi_index<N(product), product> _product;
     multi_index<N(order), order> _order;
-    
-    
     
 };
 
