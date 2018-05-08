@@ -25,8 +25,8 @@ public:
     
     // @abi action
     void addproduct( name owner, string name, string description, asset price) {
-        // cleos push action commerce.code addproduct '[2,"user1","wireless mouse","mac magic mouse","71.99 EOS"]' -p user1
-        // cleos get table commerce.code commerce.code product
+        // cleos push action commerce.app addproduct '[2,"user1","wireless mouse","mac magic mouse","71.99 EOS"]' -p user1
+        // cleos get table commerce.app commerce.app product
         require_auth(owner);
         
         _product.emplace(owner, [&] (auto& row) {
@@ -41,7 +41,7 @@ public:
 
     // @abi action
     void modproduct(uint64_t id, name owner, string name, string description, asset price) {
-        //cleos push action commerce.code modproduct '[2,"user1","wireless mouse","mac magic Mouse","71.99 EOS"]' -p user1
+        //cleos push action commerce.app modproduct '[2,"user1","wireless mouse","mac magic Mouse","71.99 EOS"]' -p user1
         
         require_auth(owner);
         auto iter = _product.find(id);
@@ -56,7 +56,7 @@ public:
     
     // @abi action
     void delproduct(uint64_t id, name owner) {
-        // cleos push action commerce.code dropproduct '[1]' -p user1
+        // cleos push action commerce.app dropproduct '[1]' -p user1
         // 2018-01-08T01:02:11
         
         require_auth(owner);
@@ -72,8 +72,8 @@ public:
 
     // @abi action
     void addorder(account_name buyer, account_name seller, string desc, vector<cart> shoppingcart) {
-        // cleos push action commerce.app addorder '["user2","user1","10.99 EOS","magic mouse",[{"product_id":1,"quantity":2},{"product_id":2,"quantity":1}]]' -p user2
-        // cleos push action commerce.app addorder '["user2","user1","10.99 EOS","magic mouse"]' -p user2
+        // cleos push action commerce.app addorder '["user2","user1","magic mouse",[{"product_id":1,"quantity":2},{"product_id":2,"quantity":1}]]' -p user2
+        // cleos push action commerce.app addorder '["user2","user1","magic mouse"]' -p user2
         // cleos get table commerce.app commerce.app order
         require_auth(buyer);
 
@@ -102,9 +102,9 @@ public:
         });
         // Make Payment
         /*eosio::action(
-            permission_level{ N(user2), N(active) },
+            permission_level{ N(buyer), N(active) },
             N(eosio.token), N(transfer),
-            std::make_tuple(buyer, seller, "7.0000 EOS", "memo")
+            std::make_tuple(buyer, seller, order_total, "memo")
          ).send();*/
     }
 
