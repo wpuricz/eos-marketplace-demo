@@ -9,7 +9,12 @@ using namespace std;
 
 class commerce : public contract {
     using contract::contract;
-    
+
+struct cart {
+        uint64_t product_id;
+        uint64_t quantity;
+    };
+
 public:
     commerce( account_name self ) :
     contract(self),
@@ -57,26 +62,31 @@ public:
         _product.erase(iter);
     }
 
+    bool isValidProduct(uint64_t product_id) {
+        auto iter_product = _product.find(product_id);
+        return iter_product != _product.end();
+    }
+
     // @abi action
-    void addorder(account_name buyer, account_name seller, asset total, string desc) {
-        // cleos push action commerce.app addorder '["user2","user1","10.99 EOS","magic mouse"]' -p user2
+    void addorder(account_name buyer, account_name seller, asset total, string desc, vector<cart> shoppingcart) {
+        // cleos push action commerce.app addorder '["user2","user1","10.99 EOS","magic mouse",[{"product_id":1,"quantity":2},{"product_id":2,"quantity":1}]]' -p user2
         // cleos push action commerce.app addorder '["user2","user1","10.99 EOS","magic mouse"]' -p user2
         // cleos get table commerce.app commerce.app order
         require_auth(buyer);
-        uint64_t p0 = 0;
-        uint64_t p1 = 2;
 
-
-        orderline ol1 = {1,p0,1};
-        orderline ol2 = {2,p1,1};
         vector<orderline> olines;
-        olines.push_back(ol1);
-        olines.push_back(ol2);
-
-        auto iter_product = _product.find(p0);
-        eosio_assert(iter_product != _product.end(), "Product 1 does not exist");
-        iter_product = _product.find(p1);
-        eosio_assert(iter_product != _product.end(), "Product 2 does not exist");
+        orderline o;
+        
+        for(int i =0; i < shoppingcart.size();i++) {
+            cart c = shoppingcart[i];
+            if(!isValidProduct(c.product_id)) {
+                eosio_assert(false,"Product ID is invalid");
+            }
+            o.id = i+1;
+            o.product_id = c.product_id;
+            o.quantity = c.quantity;
+            olines.push_back(o);
+        }
         
         _order.emplace(buyer, [&] (auto& row) {
             row.id = _order.available_primary_key();
@@ -88,19 +98,17 @@ public:
             row.orderdate = now();
             
         });
-        
-        eosio::action(
+        // Make Payment
+        /*eosio::action(
             permission_level{ N(user2), N(active) },
             N(eosio.token), N(transfer),
             std::make_tuple(buyer, seller, "7.0000 EOS", "memo")
-         ).send();
+         ).send();*/
     }
 
     void delorder(uint64_t id) {
         // cleos push action commerce.app delorder '[1]' -p commerce.app
-        
         auto iter = _order.find(id);
-        print("found id");
         _order.erase(iter);
     }
     
@@ -126,6 +134,7 @@ private:
         uint64_t product_id;
         uint64_t quantity;
     };
+
     
     // @abi table order i64
     struct order {
