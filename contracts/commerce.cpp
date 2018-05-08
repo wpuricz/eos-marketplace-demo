@@ -64,13 +64,14 @@ public:
         _product.erase(iter);
     }
 
-    bool isValidProduct(uint64_t product_id) {
+    asset getPrice(uint64_t product_id) {
         auto iter_product = _product.find(product_id);
-        return iter_product != _product.end();
+        eosio_assert(iter_product != _product.end(), "Product ID does not exist");
+        return iter_product->price;
     }
 
     // @abi action
-    void addorder(account_name buyer, account_name seller, asset total, string desc, vector<cart> shoppingcart) {
+    void addorder(account_name buyer, account_name seller, string desc, vector<cart> shoppingcart) {
         // cleos push action commerce.app addorder '["user2","user1","10.99 EOS","magic mouse",[{"product_id":1,"quantity":2},{"product_id":2,"quantity":1}]]' -p user2
         // cleos push action commerce.app addorder '["user2","user1","10.99 EOS","magic mouse"]' -p user2
         // cleos get table commerce.app commerce.app order
@@ -78,12 +79,11 @@ public:
 
         vector<orderline> olines;
         orderline o;
-        
+        asset order_total;
+
         for(int i =0; i < shoppingcart.size();i++) {
             cart c = shoppingcart[i];
-            if(!isValidProduct(c.product_id)) {
-                eosio_assert(false,"Product ID is invalid");
-            }
+            order_total+= getPrice(c.product_id);
             o.id = i+1;
             o.product_id = c.product_id;
             o.quantity = c.quantity;
@@ -94,7 +94,7 @@ public:
             row.id = _order.available_primary_key();
             row.buyer = buyer;
             row.seller = seller;
-            row.total = total;
+            row.total = order_total;
             row.desc = desc;
             row.lines = olines;
             row.orderdate = now();
