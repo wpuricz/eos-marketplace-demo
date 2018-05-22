@@ -73,7 +73,7 @@ export default {
   },
   created: async function() {
     this.getProducts();
-
+    this.getBalance();
   },
   methods: {
     getProducts: async function() {
@@ -191,6 +191,10 @@ export default {
     cancelEdit: function() {
       this.resetForm()
       this.editMode = false
+    },
+    getBalance: async function() {
+      let result = await eos.getCurrencyBalance("eosio.token",currentUser);
+      console.log(result);
     }
   }
 
