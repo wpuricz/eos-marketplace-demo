@@ -53,7 +53,7 @@ let config = {
   keyProvider:secrets.keys,
   httpEndpoint: secrets.endpoint
 };
-let eos = Eos.Localnet(config); // 127.0.0.1:8888
+let eos = Eos(config); // 127.0.0.1:8888
 let appcode = 'commerce.app';
 let currentUser = 'user1';
 
