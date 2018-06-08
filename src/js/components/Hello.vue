@@ -107,7 +107,7 @@ export default {
                 owner: currentUser,
                 name: this.name,
                 description: this.description,
-                price: this.price + ' EOS'
+                price: this.price + ' SYS'
                 
               }
             }
@@ -162,7 +162,7 @@ export default {
               owner: currentUser,
               name: this.name,
               description: this.description,
-              price: this.price + ' EOS'
+              price: this.price
 
             }
 
