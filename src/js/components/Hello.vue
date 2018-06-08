@@ -73,7 +73,7 @@ export default {
   },
   created: async function() {
     this.getProducts();
-
+    this.getBalance();
   },
   methods: {
     getProducts: async function() {
@@ -93,7 +93,7 @@ export default {
       
       try {
         this.processing = true;
-        await eos.transaction({
+        let response = await eos.transaction({
           actions: [
             {
               account: appcode,
@@ -107,12 +107,13 @@ export default {
                 owner: currentUser,
                 name: this.name,
                 description: this.description,
-                price: this.price + ' EOS'
+                price: this.price + ' SYS'
                 
               }
             }
           ]
         })
+        console.log(response)
         let result = await this.getProducts();
         this.processing = false;
 
@@ -161,7 +162,7 @@ export default {
               owner: currentUser,
               name: this.name,
               description: this.description,
-              price: this.price + ' EOS'
+              price: this.price
 
             }
 
@@ -190,6 +191,10 @@ export default {
     cancelEdit: function() {
       this.resetForm()
       this.editMode = false
+    },
+    getBalance: async function() {
+      let result = await eos.getCurrencyBalance("eosio.token",currentUser);
+      console.log(result);
     }
   }
 
