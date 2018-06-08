@@ -72,10 +72,53 @@ export default {
     };
   },
   created: async function() {
-    this.getProducts();
-    this.getBalance();
+    //this.getProducts();
+    //this.getBalance();
+    this.checkForScatter();
   },
   methods: {
+   checkForScatter: async function() {
+      
+      document.addEventListener('scatterLoaded', scatterExtension => {
+        const scatter = window.scatter;
+        console.log("scatter found");
+
+        scatter.getIdentity().then(identity => {
+          console.log(identity,"identity found");
+          window.identity = identity;
+          alert("welcome to eos: " + identity.name);
+          const network = {
+            blockchain:'eos',
+            host:'178.128.144.189', // ( or null if endorsed chainId )
+            port:8888, // ( or null if defaulting to 80 )
+            chainId:null, // Or null to fetch automatically ( takes longer )
+          }
+          let eos = scatter.eos(network,Eos.Localnet, {});
+          let tableQuery = {
+            "json":true,
+            "table_key":"uint64_t",
+            "scope":appcode,
+            "code":appcode,
+            "table":"product"
+          }
+          
+          eos.getTableRows(tableQuery)
+          .then(res => {
+            this.rows = res.rows;
+          })
+          .catch(err => {
+            console.log("error fetching rows: " + err);
+          })
+          //this.rows = result.rows;
+          //let eos = eosscatter;
+          //this.getProducts();
+        }).catch(error => {
+          alert("error getting identity: " + error);
+          console.log(error);
+        })
+      })
+
+    },
     getProducts: async function() {
       let tableQuery = {
         "json":true,
