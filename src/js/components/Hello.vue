@@ -53,9 +53,17 @@ let config = {
   keyProvider:secrets.keys,
   httpEndpoint: secrets.endpoint
 };
-let eos = Eos(config); // 127.0.0.1:8888
+//let eos = Eos(config); // 127.0.0.1:8888
+let eos = null;
 let appcode = 'commerce.app';
 let currentUser = 'user1';
+let scatterInstalled = false;
+
+setTimeout(() => {
+  if(!scatterInstalled) {
+    alert("Please install scatter to use the site");
+  }
+},5000);
 
 export default {
   name: 'hello',
@@ -80,20 +88,27 @@ export default {
    checkForScatter: async function() {
       
       document.addEventListener('scatterLoaded', scatterExtension => {
+        scatterInstalled = true;
         const scatter = window.scatter;
         console.log("scatter found");
-
-        scatter.getIdentity().then(identity => {
+        const network = {
+            blockchain:'eos',
+            host:'', // ( or null if endorsed chainId )
+            port:8888, // ( or null if defaulting to 80 )
+            chainId:"cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f", // Or null to fetch automatically ( takes longer )
+          }
+        const network2 = {
+            blockchain:'eos',
+            host:'', // ( or null if endorsed chainId )
+            port:8888 // ( or null if defaulting to 80 )
+            
+          }
+        scatter.getIdentity({accounts:[network]}).then(identity => {
           console.log(identity,"identity found");
           window.identity = identity;
           alert("welcome to eos: " + identity.name);
-          const network = {
-            blockchain:'eos',
-            host:'178.128.144.189', // ( or null if endorsed chainId )
-            port:8888, // ( or null if defaulting to 80 )
-            chainId:null, // Or null to fetch automatically ( takes longer )
-          }
-          let eos = scatter.eos(network,Eos.Localnet, {});
+          
+          eos = scatter.eos(network2,Eos, {});
           let tableQuery = {
             "json":true,
             "table_key":"uint64_t",
@@ -102,16 +117,16 @@ export default {
             "table":"product"
           }
           
-          eos.getTableRows(tableQuery)
+          /*eos.getTableRows(tableQuery)
           .then(res => {
             this.rows = res.rows;
           })
           .catch(err => {
             console.log("error fetching rows: " + err);
-          })
+          })*/
           //this.rows = result.rows;
           //let eos = eosscatter;
-          //this.getProducts();
+          this.getProducts();
         }).catch(error => {
           alert("error getting identity: " + error);
           console.log(error);
